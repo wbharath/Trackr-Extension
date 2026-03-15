@@ -1,0 +1,44 @@
+{
+  "manifest_version": 3,
+  "name": "Jobster",
+  "version": "1.0.0",
+  "description": "Track job applications — save from any job site + sync from Gmail",
+
+  "permissions": [
+    "identity",
+    "identity.email",
+    "storage",
+    "activeTab",
+    "scripting"
+  ],
+
+  "host_permissions": [
+    "https://www.googleapis.com/*",
+    "http://localhost:8080/*",
+    "<all_urls>"
+  ],
+
+  "oauth2": {
+    "client_id": "316793878772-4c6ooo8frqtm89isp71ie7te4qfl5gbt.apps.googleusercontent.com",
+    "scopes": [
+      "https://www.googleapis.com/auth/gmail.readonly",
+      "https://www.googleapis.com/auth/userinfo.email"
+    ]
+  },
+
+  "action": {
+    "default_popup": "popup.html"
+  },
+
+  "background": {
+    "service_worker": "background.js"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
