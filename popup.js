@@ -1,44 +1,40 @@
 /**
- * Jobster - popup.js (merged)
+ * Trackr - popup.js
  * Handles: Login, Job Tracker (scrape + save), Gmail OAuth + Sync
  */
 
-const API_BASE = 'http://localhost:8080/api/v1'
+const API_BASE = 'https://trackr-backend-6c57.onrender.com/api/v1'
 
 // ── DOM refs ──────────────────────────────────────────────────────────────────
-const loginView = document.getElementById('loginView')
-const trackerView = document.getElementById('trackerView')
-const gmailView = document.getElementById('gmailView')
-const successView = document.getElementById('successView')
-const tabBar = document.getElementById('tabBar')
-const statusDot = document.getElementById('statusDot')
-const loginToast = document.getElementById('loginToast')
-const jobToast = document.getElementById('jobToast')
-const scrapeBadge = document.getElementById('scrapeBadge')
+const loginView    = document.getElementById('loginView')
+const trackerView  = document.getElementById('trackerView')
+const gmailView    = document.getElementById('gmailView')
+const successView  = document.getElementById('successView')
+const tabBar       = document.getElementById('tabBar')
+const statusDot    = document.getElementById('statusDot')
+const loginToast   = document.getElementById('loginToast')
+const jobToast     = document.getElementById('jobToast')
+const scrapeBadge  = document.getElementById('scrapeBadge')
 const loggedInEmail = document.getElementById('loggedInEmail')
-const successMsg = document.getElementById('successMsg')
+const successMsg   = document.getElementById('successMsg')
 
 // Gmail refs
-const gmailConnectSection = document.getElementById('gmailConnectSection')
-const gmailSyncSection = document.getElementById('gmailSyncSection')
-const gmailUserCard = document.getElementById('gmailUserCard')
-const gmailAvatarInitials = document.getElementById('gmailAvatarInitials')
-const gmailUserName = document.getElementById('gmailUserName')
-const gmailUserEmail = document.getElementById('gmailUserEmail')
-const btnConnect = document.getElementById('btnConnect')
-const btnSync = document.getElementById('btnSync')
-const btnDisconnect = document.getElementById('btnDisconnect')
-const syncLog = document.getElementById('syncLog')
-const lastSyncText = document.getElementById('lastSyncText')
-const syncSpinner = document.getElementById('syncSpinner')
-const syncIcon = document.getElementById('syncIcon')
+const gmailConnectSection  = document.getElementById('gmailConnectSection')
+const gmailSyncSection     = document.getElementById('gmailSyncSection')
+const gmailUserCard        = document.getElementById('gmailUserCard')
+const gmailAvatarInitials  = document.getElementById('gmailAvatarInitials')
+const gmailUserName        = document.getElementById('gmailUserName')
+const gmailUserEmail       = document.getElementById('gmailUserEmail')
+const btnConnect           = document.getElementById('btnConnect')
+const btnSync              = document.getElementById('btnSync')
+const btnDisconnect        = document.getElementById('btnDisconnect')
+const syncLog              = document.getElementById('syncLog')
+const lastSyncText         = document.getElementById('lastSyncText')
+const syncSpinner          = document.getElementById('syncSpinner')
+const syncIcon             = document.getElementById('syncIcon')
 
-document
-  .getElementById('tabTracker')
-  .addEventListener('click', () => switchTab('tracker'))
-document
-  .getElementById('tabGmail')
-  .addEventListener('click', () => switchTab('gmail'))
+document.getElementById('tabTracker').addEventListener('click', () => switchTab('tracker'))
+document.getElementById('tabGmail').addEventListener('click',   () => switchTab('gmail'))
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function showView(view) {
@@ -51,12 +47,8 @@ function showView(view) {
 }
 
 function switchTab(tab) {
-  document
-    .getElementById('tabTracker')
-    .classList.toggle('active', tab === 'tracker')
-  document
-    .getElementById('tabGmail')
-    .classList.toggle('active', tab === 'gmail')
+  document.getElementById('tabTracker').classList.toggle('active', tab === 'tracker')
+  document.getElementById('tabGmail').classList.toggle('active', tab === 'gmail')
   showView(tab === 'tracker' ? trackerView : gmailView)
   if (tab === 'tracker') setTimeout(() => scrapeCurrentPage(), 100)
 }
@@ -72,15 +64,9 @@ function setStatus(state) {
   statusDot.className = `status-dot ${state}`
 }
 
-function setStorage(obj) {
-  return new Promise((res) => chrome.storage.local.set(obj, res))
-}
-function getStorage(keys) {
-  return new Promise((res) => chrome.storage.local.get(keys, res))
-}
-function removeStorage(keys) {
-  return new Promise((res) => chrome.storage.local.remove(keys, res))
-}
+function setStorage(obj)   { return new Promise((res) => chrome.storage.local.set(obj, res)) }
+function getStorage(keys)  { return new Promise((res) => chrome.storage.local.get(keys, res)) }
+function removeStorage(keys) { return new Promise((res) => chrome.storage.local.remove(keys, res)) }
 
 function formatDate(iso) {
   const d = new Date(iso)
@@ -99,16 +85,13 @@ chrome.storage.local.get(
       setStatus('online')
       loggedInEmail.textContent = email || ''
 
-      // Default to Gmail Sync tab
       showView(gmailView)
       document.getElementById('tabTracker').classList.remove('active')
       document.getElementById('tabGmail').classList.add('active')
 
-      // Restore Gmail state if already connected
       if (gmailToken && gmailUserInfo) {
         showGmailConnected(gmailUserInfo)
-        if (lastSync)
-          lastSyncText.textContent = `Last synced: ${formatDate(lastSync)}`
+        if (lastSync) lastSyncText.textContent = `Last synced: ${formatDate(lastSync)}`
       }
     } else {
       setStatus('offline')
@@ -119,7 +102,7 @@ chrome.storage.local.get(
 
 // ── LOGIN ─────────────────────────────────────────────────────────────────────
 document.getElementById('loginBtn').addEventListener('click', async () => {
-  const email = document.getElementById('loginEmail').value.trim()
+  const email    = document.getElementById('loginEmail').value.trim()
   const password = document.getElementById('loginPassword').value.trim()
 
   if (!email || !password) {
@@ -140,15 +123,10 @@ document.getElementById('loginBtn').addEventListener('click', async () => {
     const data = await resp.json()
     if (!resp.ok) throw new Error(data.message || 'Login failed')
 
-    await setStorage({
-      token: data.token,
-      email,
-      userName: data.user?.name || email
-    })
+    await setStorage({ token: data.token, email, userName: data.user?.name || email })
     setStatus('online')
     loggedInEmail.textContent = email
 
-    // Default to Gmail Sync tab after login too
     showView(gmailView)
     document.getElementById('tabTracker').classList.remove('active')
     document.getElementById('tabGmail').classList.add('active')
@@ -176,8 +154,8 @@ function scrapeCurrentPage() {
   chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
     if (!tabs[0]) return
 
-    document.getElementById('position').placeholder = 'Detecting...'
-    document.getElementById('company').placeholder = 'Detecting...'
+    document.getElementById('position').placeholder  = 'Detecting...'
+    document.getElementById('company').placeholder   = 'Detecting...'
     document.getElementById('jobLocation').placeholder = 'Detecting...'
 
     try {
@@ -189,38 +167,30 @@ function scrapeCurrentPage() {
       console.log('Script injection:', e)
     }
 
-    chrome.tabs.sendMessage(
-      tabs[0].id,
-      { action: 'scrapeJob' },
-      async (response) => {
-        document.getElementById('position').placeholder =
-          'e.g. Frontend Developer'
-        document.getElementById('company').placeholder = 'e.g. Acme Corp'
-        document.getElementById('jobLocation').placeholder = 'e.g. Toronto, ON'
+    chrome.tabs.sendMessage(tabs[0].id, { action: 'scrapeJob' }, async (response) => {
+      document.getElementById('position').placeholder  = 'e.g. Frontend Developer'
+      document.getElementById('company').placeholder   = 'e.g. Acme Corp'
+      document.getElementById('jobLocation').placeholder = 'e.g. Toronto, ON'
 
-        if (chrome.runtime.lastError || !response?.text) {
-          scrapeBadge.style.display = 'none'
-          return
-        }
-
-        scrapeBadge.textContent = '⏳ detecting with AI...'
-        scrapeBadge.style.display = 'inline-flex'
-
-        const extracted = await extractJobWithAI(response.text, response.title)
-
-        if (extracted.position || extracted.company || extracted.jobLocation) {
-          if (extracted.position)
-            document.getElementById('position').value = extracted.position
-          if (extracted.company)
-            document.getElementById('company').value = extracted.company
-          if (extracted.jobLocation)
-            document.getElementById('jobLocation').value = extracted.jobLocation
-          scrapeBadge.textContent = '✦ auto-detected with AI'
-        } else {
-          scrapeBadge.style.display = 'none'
-        }
+      if (chrome.runtime.lastError || !response?.text) {
+        scrapeBadge.style.display = 'none'
+        return
       }
-    )
+
+      scrapeBadge.textContent = '⏳ detecting with AI...'
+      scrapeBadge.style.display = 'inline-flex'
+
+      const extracted = await extractJobWithAI(response.text, response.title)
+
+      if (extracted.position || extracted.company || extracted.jobLocation) {
+        if (extracted.position)    document.getElementById('position').value    = extracted.position
+        if (extracted.company)     document.getElementById('company').value     = extracted.company
+        if (extracted.jobLocation) document.getElementById('jobLocation').value = extracted.jobLocation
+        scrapeBadge.textContent = '✦ auto-detected with AI'
+      } else {
+        scrapeBadge.style.display = 'none'
+      }
+    })
   })
 }
 
@@ -245,11 +215,11 @@ async function extractJobWithAI(pageText, pageTitle) {
 
 // ── SAVE JOB ──────────────────────────────────────────────────────────────────
 document.getElementById('saveBtn').addEventListener('click', async () => {
-  const position = document.getElementById('position').value.trim()
-  const company = document.getElementById('company').value.trim()
+  const position   = document.getElementById('position').value.trim()
+  const company    = document.getElementById('company').value.trim()
   const jobLocation = document.getElementById('jobLocation').value.trim()
-  const jobType = document.getElementById('jobType').value
-  const status = document.getElementById('status').value
+  const jobType    = document.getElementById('jobType').value
+  const status     = document.getElementById('status').value
 
   if (!position || !company || !jobLocation) {
     showToast(jobToast, 'Position, company and location are required', 'error')
@@ -289,14 +259,12 @@ document.getElementById('addAnotherBtn').addEventListener('click', () => {
     (id) => (document.getElementById(id).value = '')
   )
   document.getElementById('jobType').value = 'full-time'
-  document.getElementById('status').value = 'APPLIED'
+  document.getElementById('status').value  = 'APPLIED'
   showView(trackerView)
   setTimeout(() => scrapeCurrentPage(), 100)
 })
 
-document
-  .getElementById('closeBtn')
-  .addEventListener('click', () => window.close())
+document.getElementById('closeBtn').addEventListener('click', () => window.close())
 
 // ── GMAIL: CONNECT ────────────────────────────────────────────────────────────
 btnConnect.addEventListener('click', () => {
@@ -320,12 +288,9 @@ btnConnect.addEventListener('click', () => {
 
     try {
       const token = response.token
-      const profileRes = await fetch(
-        'https://www.googleapis.com/oauth2/v2/userinfo',
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      )
+      const profileRes = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+        headers: { Authorization: `Bearer ${token}` }
+      })
       const profile = await profileRes.json()
       await setStorage({ gmailToken: token, gmailUserInfo: profile })
       showGmailConnected(profile)
@@ -340,10 +305,9 @@ btnConnect.addEventListener('click', () => {
 // ── GMAIL: SYNC ───────────────────────────────────────────────────────────────
 btnSync.addEventListener('click', async () => {
   const { token, gmailToken, gmailUserInfo } = await getStorage([
-    'token',
-    'gmailToken',
-    'gmailUserInfo'
+    'token', 'gmailToken', 'gmailUserInfo'
   ])
+
   if (!gmailToken || !token) {
     addLog('error', 'Not connected. Please reconnect.')
     return
@@ -379,8 +343,7 @@ btnSync.addEventListener('click', async () => {
     const result = await resp.json()
     addLog('success', `Fetched ${result.processed} emails`)
     addLog('success', `Saved ${result.categorized} job-related emails`)
-    if (result.skipped > 0)
-      addLog('info', `Skipped ${result.skipped} already saved`)
+    if (result.skipped > 0) addLog('info', `Skipped ${result.skipped} already saved`)
 
     const now = new Date().toISOString()
     await setStorage({ lastSync: now })
@@ -397,9 +360,7 @@ btnDisconnect.addEventListener('click', async () => {
   const { gmailToken } = await getStorage(['gmailToken'])
   if (gmailToken) {
     chrome.identity.removeCachedAuthToken({ token: gmailToken }, () => {})
-    fetch(`https://oauth2.googleapis.com/revoke?token=${gmailToken}`, {
-      method: 'POST'
-    })
+    fetch(`https://oauth2.googleapis.com/revoke?token=${gmailToken}`, { method: 'POST' })
   }
   await removeStorage(['gmailToken', 'gmailUserInfo', 'lastSync'])
   showGmailDisconnected()
@@ -408,28 +369,23 @@ btnDisconnect.addEventListener('click', async () => {
 // ── GMAIL UI helpers ──────────────────────────────────────────────────────────
 function showGmailConnected(profile) {
   gmailConnectSection.style.display = 'none'
-  gmailSyncSection.style.display = 'block'
-  gmailUserCard.style.display = 'flex'
+  gmailSyncSection.style.display    = 'block'
+  gmailUserCard.style.display       = 'flex'
 
   const name = profile.name || profile.email?.split('@')[0] || 'User'
-  const initials = name
-    .split(' ')
-    .map((p) => p[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2)
+  const initials = name.split(' ').map((p) => p[0]).join('').toUpperCase().slice(0, 2)
   gmailAvatarInitials.textContent = initials
-  gmailUserName.textContent = name
+  gmailUserName.textContent  = name
   gmailUserEmail.textContent = profile.email || ''
 }
 
 function showGmailDisconnected() {
   gmailConnectSection.style.display = 'block'
-  gmailSyncSection.style.display = 'none'
-  gmailUserCard.style.display = 'none'
-  syncLog.style.display = 'none'
-  syncLog.innerHTML = ''
-  lastSyncText.textContent = ''
+  gmailSyncSection.style.display    = 'none'
+  gmailUserCard.style.display       = 'none'
+  syncLog.style.display             = 'none'
+  syncLog.innerHTML                 = ''
+  lastSyncText.textContent          = ''
   btnConnect.disabled = false
   btnConnect.innerHTML = `
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -449,12 +405,9 @@ function addLog(type, msg) {
   const line = document.createElement('div')
   line.className = `log-line ${type}`
   const time = new Date().toLocaleTimeString('en-US', {
-    hour12: false,
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit'
+    hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit'
   })
-  line.innerHTML = `<span style="color:#374151">${time}</span><span class="msg"> ${msg}</span>`
+  line.innerHTML = `<span style="color:#94a3b8">${time}</span><span class="msg"> ${msg}</span>`
   syncLog.appendChild(line)
   syncLog.scrollTop = syncLog.scrollHeight
 }

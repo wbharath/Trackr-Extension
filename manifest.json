@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Jobster",
+  "name": "Trackr — Job Application Tracker",
   "version": "1.0.0",
-  "description": "Track job applications — save from any job site + sync from Gmail",
+  "description": "Save job applications from any site + sync from Gmail. AI-powered auto-detection.",
 
   "permissions": [
     "identity",
@@ -14,7 +14,7 @@
 
   "host_permissions": [
     "https://www.googleapis.com/*",
-    "http://localhost:8080/*",
+    "https://trackr-backend-6c57.onrender.com/*",
     "<all_urls>"
   ],
 

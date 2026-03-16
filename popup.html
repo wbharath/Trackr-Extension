@@ -3,24 +3,40 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Jobster</title>
+  <title>Trackr</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;1,300&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     :root {
-      --bg: #0f0f13;
-      --surface: #1a1a24;
-      --border: #2a2a3a;
-      --accent: #6c63ff;
-      --accent-dim: rgba(108,99,255,0.15);
-      --success: #22c55e;
-      --error: #ef4444;
-      --warn: #f59e0b;
-      --text: #e8e8f0;
-      --muted: #6b6b80;
-      --input-bg: #13131c;
+      --brand: #0d7a5f;
+      --brand-dark: #095c47;
+      --brand-light: #e6f4f0;
+      --brand-muted: rgba(13, 122, 95, 0.10);
+
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --border: #e2e8f0;
+
+      --text: #1e293b;
+      --muted: #64748b;
+      --subtle: #94a3b8;
+
+      --success: #16a34a;
+      --success-bg: #dcfce7;
+      --error: #dc2626;
+      --error-bg: #fee2e2;
+
+      --shadow-1: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --radius: 7px;
+      --radius-lg: 10px;
     }
 
     body {
@@ -29,6 +45,7 @@
       color: var(--text);
       font-family: 'DM Sans', sans-serif;
       font-size: 13px;
+      -webkit-font-smoothing: antialiased;
     }
 
     /* ── Header ── */
@@ -37,7 +54,9 @@
       align-items: center;
       justify-content: space-between;
       padding: 12px 16px;
+      background: var(--surface);
       border-bottom: 1px solid var(--border);
+      box-shadow: var(--shadow-1);
     }
 
     .logo {
@@ -49,36 +68,49 @@
     .logo-icon {
       width: 26px;
       height: 26px;
-      background: var(--accent);
+      background: var(--brand);
       border-radius: 7px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 13px;
+      font-size: 14px;
+      font-style: italic;
+      font-family: 'Fraunces', Georgia, serif;
+      color: white;
+      font-weight: 300;
+      flex-shrink: 0;
     }
 
     .logo-text {
-      font-family: 'DM Mono', monospace;
-      font-weight: 500;
-      font-size: 14px;
+      font-family: 'Fraunces', Georgia, serif;
+      font-weight: 300;
+      font-size: 17px;
       letter-spacing: -0.3px;
+      color: var(--text);
     }
-
-    .logo-text span { color: var(--accent); }
 
     .status-dot {
-      width: 7px; height: 7px;
+      width: 7px;
+      height: 7px;
       border-radius: 50%;
-      background: var(--muted);
+      background: var(--subtle);
     }
-    .status-dot.online  { background: var(--success); box-shadow: 0 0 6px var(--success); }
-    .status-dot.offline { background: var(--error);   box-shadow: 0 0 6px var(--error); }
+
+    .status-dot.online {
+      background: var(--success);
+      box-shadow: 0 0 6px rgba(22, 163, 74, 0.5);
+    }
+
+    .status-dot.offline {
+      background: var(--subtle);
+    }
 
     /* ── Tabs ── */
     .tabs {
       display: grid;
       grid-template-columns: 1fr 1fr;
       border-bottom: 1px solid var(--border);
+      background: var(--surface);
     }
 
     .tab {
@@ -93,18 +125,31 @@
     }
 
     .tab.active {
-      color: var(--accent);
-      border-bottom-color: var(--accent);
+      color: var(--brand);
+      border-bottom-color: var(--brand);
+    }
+
+    .tab:hover:not(.active) {
+      color: var(--text);
+      background: var(--bg);
     }
 
     /* ── Views ── */
-    .view { display: none; padding: 14px 16px; }
-    .view.active { display: block; }
+    .view {
+      display: none;
+      padding: 14px 16px;
+    }
 
-    /* ── Login ── */
+    .view.active {
+      display: block;
+    }
+
+    /* ── Titles ── */
     .section-title {
-      font-size: 14px;
-      font-weight: 600;
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--text);
       margin-bottom: 3px;
     }
 
@@ -116,36 +161,58 @@
     }
 
     /* ── Fields ── */
-    .field { margin-bottom: 10px; }
+    .field {
+      margin-bottom: 10px;
+    }
 
     .field label {
       display: block;
       font-size: 10px;
-      font-weight: 500;
+      font-weight: 600;
       color: var(--muted);
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.6px;
       margin-bottom: 4px;
     }
 
     .field input,
     .field select {
       width: 100%;
-      background: var(--input-bg);
+      background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 7px;
+      border-radius: var(--radius);
       padding: 8px 10px;
       color: var(--text);
       font-family: 'DM Sans', sans-serif;
       font-size: 13px;
       outline: none;
-      transition: border-color 0.15s;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      box-shadow: var(--shadow-1);
     }
 
     .field input:focus,
-    .field select:focus { border-color: var(--accent); }
-    .field input::placeholder { color: var(--muted); }
-    .field select option { background: var(--surface); }
+    .field select:focus {
+      border-color: var(--brand);
+      box-shadow: 0 0 0 3px var(--brand-muted);
+    }
+
+    .field input::placeholder {
+      color: var(--subtle);
+    }
+
+    .field select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2394a3b8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      padding-right: 28px;
+      cursor: pointer;
+    }
+
+    .field select option {
+      background: var(--surface);
+      color: var(--text);
+    }
 
     .row {
       display: grid;
@@ -157,7 +224,7 @@
     .btn {
       width: 100%;
       padding: 9px;
-      border-radius: 8px;
+      border-radius: var(--radius);
       border: none;
       font-family: 'DM Sans', sans-serif;
       font-size: 13px;
@@ -170,26 +237,54 @@
       gap: 6px;
     }
 
-    .btn-primary { background: var(--accent); color: #fff; }
-    .btn-primary:hover { background: #7b74ff; transform: translateY(-1px); }
-    .btn-primary:active { transform: translateY(0); }
-    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .btn-primary {
+      background: var(--brand);
+      color: #fff;
+      box-shadow: 0 1px 2px rgba(13, 122, 95, 0.25);
+    }
+
+    .btn-primary:hover {
+      background: var(--brand-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 6px rgba(13, 122, 95, 0.3);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+      box-shadow: none;
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
 
     .btn-ghost {
       background: transparent;
       color: var(--muted);
       border: 1px solid var(--border);
       margin-top: 8px;
+      box-shadow: var(--shadow-1);
     }
-    .btn-ghost:hover { color: var(--text); border-color: var(--muted); }
+
+    .btn-ghost:hover {
+      color: var(--text);
+      border-color: var(--subtle);
+      background: var(--surface);
+    }
 
     .btn-danger {
-      background: rgba(239,68,68,0.1);
-      color: #f87171;
-      border: 1px solid rgba(239,68,68,0.2);
+      background: var(--error-bg);
+      color: var(--error);
+      border: 1px solid rgba(220, 38, 38, 0.2);
       margin-top: 8px;
     }
-    .btn-danger:hover { background: rgba(239,68,68,0.2); }
+
+    .btn-danger:hover {
+      background: #fecaca;
+    }
 
     /* ── Toast ── */
     .toast {
@@ -197,15 +292,34 @@
       align-items: center;
       gap: 8px;
       padding: 8px 11px;
-      border-radius: 7px;
+      border-radius: var(--radius);
       font-size: 12px;
       font-weight: 500;
       margin-bottom: 11px;
+      line-height: 1.4;
     }
-    .toast.show { display: flex; }
-    .toast.success { background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.3); color: var(--success); }
-    .toast.error   { background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.3); color: var(--error); }
-    .toast.info    { background: rgba(108,99,255,0.12); border: 1px solid rgba(108,99,255,0.3); color: var(--accent); }
+
+    .toast.show {
+      display: flex;
+    }
+
+    .toast.success {
+      background: var(--success-bg);
+      border: 1px solid rgba(22, 163, 74, 0.25);
+      color: var(--success);
+    }
+
+    .toast.error {
+      background: var(--error-bg);
+      border: 1px solid rgba(220, 38, 38, 0.25);
+      color: var(--error);
+    }
+
+    .toast.info {
+      background: var(--brand-light);
+      border: 1px solid rgba(13, 122, 95, 0.2);
+      color: var(--brand);
+    }
 
     /* ── Scrape badge ── */
     .scrape-badge {
@@ -213,12 +327,13 @@
       align-items: center;
       gap: 5px;
       font-size: 10px;
-      color: var(--accent);
-      background: var(--accent-dim);
-      border-radius: 4px;
-      padding: 2px 7px;
-      margin-bottom: 10px;
       font-family: 'DM Mono', monospace;
+      color: var(--brand);
+      background: var(--brand-light);
+      border: 1px solid rgba(13, 122, 95, 0.2);
+      border-radius: 4px;
+      padding: 3px 8px;
+      margin-bottom: 10px;
     }
 
     /* ── Logout row ── */
@@ -233,57 +348,78 @@
 
     .logout-user {
       font-size: 11px;
-      color: var(--muted);
+      color: var(--subtle);
       font-family: 'DM Mono', monospace;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 180px;
     }
 
     .logout-btn {
       font-size: 11px;
       color: var(--muted);
       background: none;
-      border: none;
+      border: 1px solid var(--border);
+      border-radius: 5px;
       cursor: pointer;
       font-family: 'DM Sans', sans-serif;
-      padding: 3px 8px;
-      border-radius: 5px;
+      padding: 3px 9px;
       transition: all 0.15s;
+      flex-shrink: 0;
     }
-    .logout-btn:hover { color: var(--error); background: rgba(239,68,68,0.1); }
 
-    /* ── Gmail section ── */
+    .logout-btn:hover {
+      color: var(--error);
+      border-color: rgba(220, 38, 38, 0.3);
+      background: var(--error-bg);
+    }
+
+    /* ── Gmail user card ── */
     .user-card {
       display: none;
       align-items: center;
       gap: 10px;
       padding: 10px 12px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 10px;
+      background: var(--brand-light);
+      border: 1px solid rgba(13, 122, 95, 0.15);
+      border-radius: var(--radius-lg);
       margin-bottom: 12px;
     }
 
     .avatar {
-      width: 32px; height: 32px;
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
-      background: linear-gradient(135deg, #6c63ff, #a78bfa);
+      background: var(--brand);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: 700;
-      font-size: 13px;
+      font-weight: 600;
+      font-size: 12px;
+      color: white;
       flex-shrink: 0;
     }
 
-    .user-info .name  { font-weight: 500; font-size: 12px; }
-    .user-info .email { font-size: 11px; color: var(--muted); margin-top: 1px; }
+    .user-info .name {
+      font-weight: 500;
+      font-size: 12px;
+      color: var(--text);
+    }
+
+    .user-info .email {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 1px;
+    }
 
     /* ── Sync log ── */
     #syncLog {
       display: none;
       margin-top: 10px;
-      background: rgba(0,0,0,0.3);
+      background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 8px;
+      border-radius: var(--radius);
       padding: 8px 10px;
       font-size: 11px;
       color: var(--muted);
@@ -291,39 +427,91 @@
       overflow-y: auto;
       font-family: 'DM Mono', monospace;
       line-height: 1.7;
+      box-shadow: var(--shadow-1);
     }
 
-    #syncLog .log-line { display: flex; gap: 6px; }
-    #syncLog .log-line.success .msg { color: var(--success); }
-    #syncLog .log-line.error   .msg { color: var(--error); }
-    #syncLog .log-line.info    .msg { color: var(--accent); }
+    #syncLog .log-line {
+      display: flex;
+      gap: 6px;
+    }
+
+    #syncLog .log-line.success .msg {
+      color: var(--success);
+    }
+
+    #syncLog .log-line.error .msg {
+      color: var(--error);
+    }
+
+    #syncLog .log-line.info .msg {
+      color: var(--brand);
+    }
 
     #lastSyncText {
       font-size: 11px;
-      color: #4b5563;
+      color: var(--subtle);
       text-align: center;
       margin-top: 10px;
+      font-family: 'DM Mono', monospace;
     }
 
     .spinner {
-      width: 13px; height: 13px;
-      border: 2px solid rgba(255,255,255,0.3);
+      width: 13px;
+      height: 13px;
+      border: 2px solid rgba(255, 255, 255, 0.4);
       border-top-color: #fff;
       border-radius: 50%;
       animation: spin 0.7s linear infinite;
       display: none;
     }
-    .spinner.spinning { display: inline-block; }
-    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .spinner.spinning {
+      display: inline-block;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
 
     /* ── Success view ── */
     .success-view {
       text-align: center;
-      padding: 20px 16px;
+      padding: 20px 16px 16px;
     }
-    .success-icon { font-size: 34px; margin-bottom: 8px; }
-    .success-title { font-size: 15px; font-weight: 600; margin-bottom: 3px; }
-    .success-sub { color: var(--muted); font-size: 12px; margin-bottom: 14px; }
+
+    .success-icon-wrap {
+      width: 44px;
+      height: 44px;
+      background: var(--brand-light);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 12px;
+    }
+
+    .success-icon-wrap svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .success-title {
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .success-sub {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+
   </style>
 </head>
 <body>
@@ -331,13 +519,13 @@
   <!-- Header -->
   <div class="header">
     <div class="logo">
-      <div class="logo-icon">💼</div>
-      <div class="logo-text">job<span>ster</span></div>
+      <div class="logo-icon">t</div>
+      <div class="logo-text">rackr</div>
     </div>
     <div class="status-dot" id="statusDot"></div>
   </div>
 
-  <!-- Tabs (hidden on login/success) -->
+  <!-- Tabs -->
   <div class="tabs" id="tabBar" style="display:none">
     <div class="tab active" id="tabTracker">💾 Save Job</div>
     <div class="tab" id="tabGmail">✉️ Gmail Sync</div>
@@ -345,7 +533,7 @@
 
   <!-- ── LOGIN VIEW ── -->
   <div class="view active" id="loginView">
-    <p class="section-title">Connect to Jobster</p>
+    <p class="section-title">Welcome back</p>
     <p class="section-sub">Sign in to save jobs and sync your Gmail.</p>
     <div id="loginToast" class="toast"></div>
     <div class="field">
@@ -407,34 +595,33 @@
 
   <!-- ── GMAIL SYNC VIEW ── -->
   <div class="view" id="gmailView">
-
-    <!-- Not connected -->
     <div id="gmailConnectSection">
-      <p class="section-sub">Connect Gmail to auto-detect job emails and sync them to Jobster.</p>
+      <p class="section-sub">Connect Gmail to auto-detect job emails and sync them to Trackr.</p>
       <button class="btn btn-primary" id="btnConnect">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-          <polyline points="22,6 12,12 2,6"/>
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+          <polyline points="22,6 12,12 2,6" />
         </svg>
         Connect Gmail
       </button>
     </div>
 
-    <!-- Connected -->
     <div id="gmailSyncSection" style="display:none">
       <div class="user-card" id="gmailUserCard">
         <div class="avatar" id="gmailAvatarInitials">?</div>
         <div class="user-info">
-          <div class="name"  id="gmailUserName">—</div>
+          <div class="name" id="gmailUserName">—</div>
           <div class="email" id="gmailUserEmail">—</div>
         </div>
       </div>
 
       <button class="btn btn-primary" id="btnSync">
         <div class="spinner" id="syncSpinner"></div>
-        <svg id="syncIcon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
-          <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+        <svg id="syncIcon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2.5">
+          <polyline points="23 4 23 10 17 10" />
+          <polyline points="1 20 1 14 7 14" />
+          <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
         </svg>
         Sync Emails
       </button>
@@ -448,11 +635,15 @@
   <!-- ── SUCCESS VIEW ── -->
   <div class="view" id="successView">
     <div class="success-view">
-      <div class="success-icon">✅</div>
-      <p class="success-title">Job Saved!</p>
+      <div class="success-icon-wrap">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M5 13l4 4L19 7" stroke="#0d7a5f" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </div>
+      <p class="success-title">Job saved!</p>
       <p class="success-sub" id="successMsg"></p>
       <button class="btn btn-primary" id="addAnotherBtn">Add Another</button>
-      <button class="btn btn-ghost"   id="closeBtn">Close</button>
+      <button class="btn btn-ghost" id="closeBtn">Close</button>
     </div>
   </div>
 
